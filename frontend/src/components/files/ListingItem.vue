@@ -89,7 +89,9 @@ export default {
         modified: this.modified,
       };
 
-      return api.getPreviewURL(file, "thumb");
+      const thumbnailSize = this.user.viewMode === "mosaic gallery large" ? "big" : "thumb";
+
+      return api.getPreviewURL(file, thumbnailSize);
     },
     isThumbsEnabled() {
       return enableThumbs;

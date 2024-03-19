@@ -119,6 +119,10 @@ body.rtl #listing {
   height: 12em;
 }
 
+#listing.mosaic.gallery.large .item div:first-of-type {
+  height: 24em;
+}
+
 #listing.mosaic.gallery .item div:last-of-type {
   position: absolute;
   bottom: 0.5em;
@@ -137,6 +141,10 @@ body.rtl #listing {
     margin-right: 0;
     font-size: 8em;
     text-align: center;
+}
+
+#listing.mosaic.gallery.large .item i {
+  font-size: 16em;
 }
 
 #listing.mosaic.gallery .item img {

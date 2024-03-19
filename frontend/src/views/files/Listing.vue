@@ -292,6 +292,7 @@ export default {
     return {
       showLimit: 50,
       columnWidth: 280,
+      largeColumnWidth: 560,
       dragCounter: 0,
       width: window.innerWidth,
       itemWeight: 0,
@@ -361,7 +362,8 @@ export default {
       const icons = {
         list: "view_module",
         mosaic: "grid_view",
-        "mosaic gallery": "view_list",
+        "mosaic gallery": "grid_view",
+        "mosaic gallery large": "view_list",
       };
       return icons[this.user.viewMode];
     },
@@ -602,8 +604,10 @@ export default {
       let items = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
       if (!items) return;
 
+      const intendedColumnWidth = this.user.viewMode === "mosaic gallery large" ? this.largeColumnWidth : this.columnWidth;
+
       let columns = Math.floor(
-        document.querySelector("main").offsetWidth / this.columnWidth
+        document.querySelector("main").offsetWidth / intendedColumnWidth
       );
       if (columns === 0) columns = 1;
       items.style.width = `calc(${100 / columns}% - 1em)`;
@@ -831,7 +835,8 @@ export default {
       const modes = {
         list: "mosaic",
         mosaic: "mosaic gallery",
-        "mosaic gallery": "list",
+        "mosaic gallery": "mosaic gallery large",
+        "mosaic gallery large": "list",
       };
 
       const data = {
@@ -846,6 +851,7 @@ export default {
 
       this.setItemWeight();
       this.fillWindow();
+      this.colunmsResize();
     },
     upload: function () {
       if (

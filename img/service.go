@@ -158,7 +158,7 @@ func (s *Service) Resize(ctx context.Context, in io.Reader, width, height int, o
 	if config.quality == QualityLow && format == FormatJpeg {
 		thm, newWrappedReader, errThm := getEmbeddedThumbnail(wrappedReader)
 		wrappedReader = newWrappedReader
-		if errThm == nil {
+		if errThm == nil && len(thm) > 0 {
 			_, err = out.Write(thm)
 			if err == nil {
 				return nil

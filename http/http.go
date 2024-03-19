@@ -60,6 +60,27 @@ func NewHandler(
 	users.Handle("/{id:[0-9]+}", monkey(userGetHandler, "")).Methods("GET")
 	users.Handle("/{id:[0-9]+}", monkey(userDeleteHandler, "")).Methods("DELETE")
 
+	api.PathPrefix("/comments").Handler(monkey(commentGetForFileHandler, "/api/comments")).Methods("GET")
+	api.PathPrefix("/comments").Handler(monkey(commentPostHandler, "/api/comments")).Methods("POST")
+	api.PathPrefix("/comments").Handler(monkey(commentDeleteHandler, "/api/comments")).Methods("DELETE")
+
+	//TODO: remove debug/development routes
+	api.PathPrefix("/debug/notificationsall").Handler(monkey(notificationsallGetHandler, "/api/debug/notificationsall")).Methods("GET")
+	api.PathPrefix("/debug/usernotificationsall").Handler(monkey(usernotificationsGetAllHandler, "/api/debug/usernotificationsall")).Methods("GET")
+	api.PathPrefix("/debug/usernotificationsallmine").Handler(monkey(usernotificationsGetAllMineHandler, "/api/debug/usernotificationsallmine")).Methods("GET")
+	api.PathPrefix("/debug/reactionsall").Handler(monkey(reactionsDebugGetAllHandler, "/api/debug/reactionsall")).Methods("GET")
+
+	api.PathPrefix("/notifications/unacknowledged").Handler(monkey(notificationUnacknowledgedCountGetHandler, "/api/notifications/unacknowledged")).Methods("GET")
+	api.PathPrefix("/notifications/acknowledge").Handler(monkey(notificationAcknowledgePostHandler, "/api/notifications/acknowledge")).Methods("POST")
+	api.PathPrefix("/notifications/useruploaded").Handler(monkey(userUploadedNotificationPostHandler, "/api/notifications/useruploaded")).Methods("POST")
+	api.PathPrefix("/notifications/page/{pagenum:[0-9]+}").Handler(monkey(notificationsGetPageHandler, "/api/notifications/page/{pagenum:[0-9]+}")).Methods("GET")
+	api.PathPrefix("/notifications/range").Handler(monkey(notificationsGetRangeHandler, "/api/notifications/range")).Methods("GET")
+
+	api.PathPrefix("/reactions/available").Handler(monkey(reactionGetAvailableReactionList, "/api/reactions/available")).Methods("GET")
+	api.PathPrefix("/reactions").Handler(monkey(reactionPostHandler, "/api/reactions")).Methods("POST")
+	api.PathPrefix("/reactions").Handler(monkey(reactionsGetByContextFilePathHandler, "/api/reactions")).Methods("GET")
+	api.PathPrefix("/reactions").Handler(monkey(reactionDeleteHandler, "/api/reactions")).Methods("DELETE")
+
 	api.PathPrefix("/resources").Handler(monkey(resourceGetHandler, "/api/resources")).Methods("GET")
 	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler(fileCache), "/api/resources")).Methods("DELETE")
 	api.PathPrefix("/resources").Handler(monkey(resourcePostHandler(fileCache), "/api/resources")).Methods("POST")

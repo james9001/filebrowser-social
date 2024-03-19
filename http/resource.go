@@ -78,6 +78,30 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		comments, _ := d.store.Comments.FindByFilePath(r.URL.Path)
+		for _, comment := range comments {
+			err = d.store.Comments.Delete(comment.ID)
+			if err != nil {
+				fmt.Println("Error deleting comment from deleting file " + r.URL.Path)
+			}
+		}
+
+		notifications, _ := d.store.Notifications.FindByContextFilePath(r.URL.Path)
+		for _, notification := range notifications {
+			err = d.store.Notifications.Delete(notification.ID)
+			if err != nil {
+				fmt.Println("Error deleting notification from deleting file " + r.URL.Path)
+			}
+		}
+
+		reactions, _ := d.store.Reactions.FindByContextFilePath(r.URL.Path)
+		for _, reaction := range reactions {
+			err = d.store.Reactions.Delete(reaction.ID)
+			if err != nil {
+				fmt.Println("Error deleting reaction from deleting file " + r.URL.Path)
+			}
+		}
+
 		err = d.RunHook(func() error {
 			return d.user.Fs.RemoveAll(r.URL.Path)
 		}, "delete", r.URL.Path, "", d.user)
@@ -324,6 +348,33 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		err = delThumbs(ctx, fileCache, file)
 		if err != nil {
 			return err
+		}
+
+		comments, _ := d.store.Comments.FindByFilePath(src)
+		for _, comment := range comments {
+			comment.FilePath = dst
+			err = d.store.Comments.Save(comment)
+			if err != nil {
+				fmt.Println("Error moving comments from " + src + " to " + dst)
+			}
+		}
+
+		notifications, _ := d.store.Notifications.FindByContextFilePath(src)
+		for _, notification := range notifications {
+			notification.ContextFilePath = dst
+			err = d.store.Notifications.Save(notification)
+			if err != nil {
+				fmt.Println("Error moving notifications from " + src + " to " + dst)
+			}
+		}
+
+		reactions, _ := d.store.Reactions.FindByContextFilePath(src)
+		for _, reaction := range reactions {
+			reaction.ContextFilePath = dst
+			err = d.store.Reactions.Save(reaction)
+			if err != nil {
+				fmt.Println("Error moving reactions from " + src + " to " + dst)
+			}
 		}
 
 		return fileutils.MoveFile(d.user.Fs, src, dst)

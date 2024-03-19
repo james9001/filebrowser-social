@@ -1,5 +1,6 @@
 import store from "@/store";
 import url from "@/utils/url";
+import { notifications as notificationsApi } from "@/api";
 
 export function checkConflict(files, items) {
   if (typeof items === "undefined" || items === null) {
@@ -109,7 +110,7 @@ function detectType(mimetype) {
   return "blob";
 }
 
-export function handleFiles(files, base, overwrite = false) {
+export function handleFiles(reqPath, files, base, overwrite = false) {
   for (let i = 0; i < files.length; i++) {
     let id = store.state.upload.id;
     let path = base;
@@ -135,4 +136,5 @@ export function handleFiles(files, base, overwrite = false) {
 
     store.dispatch("upload/upload", item);
   }
+  notificationsApi.userUploadedNotificationPost(reqPath);
 }

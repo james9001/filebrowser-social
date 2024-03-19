@@ -2,7 +2,9 @@
   <div>
     <header-bar v-if="error || req.type == null" showMenu showLogo />
 
-    <breadcrumbs base="/files" />
+	<div class="breadcrumb-overflow-removal">
+    	<breadcrumbs base="/files" />
+	</div>
 
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>

@@ -4,7 +4,7 @@
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar>
+    <header-bar @update:hideNotifications="hideNotifications">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -43,6 +43,13 @@
           :label="$t('buttons.info')"
           show="info"
         />
+        <action
+          icon="notifications"
+          :label="$t('buttons.notifications')"
+          :counter="notificationIconCount"
+          @action="openNotifications"
+          class="notifications"
+        />
       </template>
     </header-bar>
 
@@ -54,7 +61,13 @@
       </div>
     </div>
     <template v-else>
-      <div class="preview">
+      <div
+        class="preview"
+        v-bind:class="{
+          previewShowComments: showComments,
+          previewHideComments: !showComments,
+        }"
+      >
         <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
         <audio
           v-else-if="req.type == 'audio'"
@@ -115,6 +128,38 @@
           </div>
         </div>
       </div>
+      <div
+        class="notifications-pane"
+        v-bind:class="{ frameShowNotifications: showNotifications }"
+      >
+        <div
+          v-if="isMobile"
+          class="notifications-mobile-bar notifications-mobile-bar-preview"
+        >
+          <action
+            icon="close"
+            :label="$t('buttons.close')"
+            @action="openNotifications"
+          />
+        </div>
+
+        <NotificationPane
+          v-bind:filePath="req.path"
+          @update:unacknowledgedNotificationCount="
+            updateUnacknowledgedNotificationCount
+          "
+        >
+        </NotificationPane>
+      </div>
+      <div class="socialContainer">
+        <Social
+          v-bind:filePath="req.path"
+          v-bind:showComments="showComments"
+          v-bind:screenWidth="width"
+          @update:showComments="updateShowComments"
+          @update:commentEntering="commentEntering"
+        ></Social>
+      </div>
     </template>
 
     <button
@@ -125,7 +170,7 @@
       :aria-label="$t('buttons.previous')"
       :title="$t('buttons.previous')"
     >
-      <i class="material-icons">chevron_left</i>
+      <i class="material-icons noselect">chevron_left</i>
     </button>
     <button
       @click="next"
@@ -135,7 +180,7 @@
       :aria-label="$t('buttons.next')"
       :title="$t('buttons.next')"
     >
-      <i class="material-icons">chevron_right</i>
+      <i class="material-icons noselect">chevron_right</i>
     </button>
     <link rel="prefetch" :href="previousRaw" />
     <link rel="prefetch" :href="nextRaw" />
@@ -151,6 +196,8 @@ import throttle from "lodash.throttle";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
+import Social from "@/components/files/Social.vue";
+import NotificationPane from "@/components/NotificationPane.vue";
 
 const mediaTypes = ["image", "video", "audio", "blob"];
 
@@ -160,6 +207,8 @@ export default {
     HeaderBar,
     Action,
     ExtendedImage,
+    Social,
+    NotificationPane,
   },
   data: function () {
     return {
@@ -174,6 +223,11 @@ export default {
       autoPlay: false,
       previousRaw: "",
       nextRaw: "",
+      showComments: true,
+      showNotifications: false,
+      unacknowledgedNotificationCount: 0,
+      width: window.innerWidth,
+      isCommentEntering: false,
     };
   },
   computed: {
@@ -207,6 +261,12 @@ export default {
       }
       return [];
     },
+    notificationIconCount() {
+      return this.unacknowledgedNotificationCount;
+    },
+    isMobile() {
+      return this.width <= 736;
+    },
   },
   watch: {
     $route: function () {
@@ -216,13 +276,21 @@ export default {
   },
   async mounted() {
     window.addEventListener("keydown", this.key);
+    window.addEventListener("resize", this.windowsResize);
     this.listing = this.oldReq.items;
     this.updatePreview();
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.key);
+    window.removeEventListener("resize", this.windowsResize);
   },
   methods: {
+    updateShowComments(newValue) {
+      this.showComments = newValue;
+    },
+    commentEntering(newValue) {
+      this.isCommentEntering = newValue;
+    },
     deleteFile() {
       this.$store.commit("showHover", {
         prompt: "delete",
@@ -252,15 +320,17 @@ export default {
         return;
       }
 
-      if (event.which === 13 || event.which === 39) {
-        // right arrow
-        if (this.hasNext) this.next();
-      } else if (event.which === 37) {
-        // left arrow
-        if (this.hasPrevious) this.prev();
-      } else if (event.which === 27) {
-        // esc
-        this.close();
+      if (!this.isCommentEntering) {
+        if (event.which === 39) {
+          // right arrow
+          if (this.hasNext) this.next();
+        } else if (event.which === 37) {
+          // left arrow
+          if (this.hasPrevious) this.prev();
+        } else if (event.which === 27) {
+          // esc
+          this.close();
+        }
       }
     },
     async updatePreview() {
@@ -350,6 +420,79 @@ export default {
     download() {
       window.open(this.downloadUrl);
     },
+    openNotifications: function () {
+      this.$store.commit("closeHovers");
+      this.showNotifications = !this.showNotifications;
+    },
+    hideNotifications: function () {
+      this.showNotifications = false;
+    },
+    updateUnacknowledgedNotificationCount: function (newValue) {
+      this.unacknowledgedNotificationCount = newValue;
+    },
+    windowsResize: throttle(function () {
+      this.width = window.innerWidth;
+    }, 100),
   },
 };
 </script>
+<style>
+.notifications-mobile-bar-preview {
+  padding-left: 1rem;
+}
+
+#previewer .previewHideComments {
+  text-align: center;
+
+  height: calc(100vh - 16em);
+}
+
+#previewer .previewShowComments {
+  text-align: center;
+
+  height: calc(50vh - 8em);
+}
+
+#previewer .socialContainer {
+  background: var(--socialContainerBg);
+  color: var(--textPrimary);
+  overflow-y: auto;
+
+  height: calc(50vh + 4em);
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+@media (min-width: 1400px) {
+  #previewer .previewHideComments {
+    height: calc(100vh - 4em);
+
+    width: calc(100vw - 36em);
+  }
+
+  #previewer .previewShowComments {
+    height: calc(100vh - 4em);
+
+    width: calc(100vw - 36em);
+  }
+
+  #previewer .socialContainer {
+    height: calc(100vh - 4em);
+
+    position: fixed;
+    top: 4em;
+    right: 0;
+    width: 36em;
+    padding-left: 0em;
+    padding-right: 0em;
+  }
+}
+
+#previewer .showCommentsPrompt {
+  text-align: center;
+}
+
+#previewer .hideCommentsPrompt {
+  text-align: center;
+}
+</style>

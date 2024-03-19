@@ -20,7 +20,7 @@
       id="more"
       icon="more_vert"
       :label="$t('buttons.more')"
-      @action="$store.commit('showHover', 'more')"
+      @action="openMore()"
     />
 
     <div
@@ -39,7 +39,7 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "header-bar",
-  props: ["showLogo", "showMenu"],
+  props: ["showLogo", "showMenu", "hideNotifications"],
   components: {
     Action,
   },
@@ -50,7 +50,12 @@ export default {
   },
   methods: {
     openSidebar() {
+      this.$emit("update:hideNotifications");
       this.$store.commit("showHover", "sidebar");
+    },
+    openMore() {
+      this.$emit("update:hideNotifications");
+      this.$store.commit("showHover", "more");
     },
   },
   computed: {

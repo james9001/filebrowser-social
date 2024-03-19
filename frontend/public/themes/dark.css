@@ -6,6 +6,7 @@
   --icon: #ffffff;
   --textPrimary: rgba(255, 255, 255, 0.87);
   --textSecondary: rgba(255, 255, 255, 0.6);
+  --socialContainerBg: #141D24;
 }
 
 body {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-bar showMenu showLogo>
+    <header-bar showMenu showLogo @update:hideNotifications="hideNotifications">
       <search />
       <title />
       <action
@@ -77,6 +77,13 @@
           icon="check_circle"
           :label="$t('buttons.selectMultiple')"
           @action="toggleMultipleSelection"
+        />
+        <action
+          icon="notifications"
+          :label="$t('buttons.notifications')"
+          :counter="notificationIconCount"
+          @action="openNotifications"
+          class="notifications"
         />
       </template>
     </header-bar>
@@ -262,6 +269,25 @@
           </div>
         </div>
       </div>
+      <div
+        class="notifications-pane"
+        v-bind:class="{ frameShowNotifications: showNotifications }"
+      >
+        <div v-if="isMobile" class="notifications-mobile-bar">
+          <action
+            icon="close"
+            :label="$t('buttons.close')"
+            @action="openNotifications"
+          />
+        </div>
+
+        <NotificationPane
+          v-bind:filePath="req.path"
+          @update:unacknowledgedNotificationCount="
+            updateUnacknowledgedNotificationCount
+          "
+        ></NotificationPane>
+      </div>
     </template>
   </div>
 </template>
@@ -279,6 +305,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
+import NotificationPane from "@/components/NotificationPane.vue";
 
 export default {
   name: "listing",
@@ -287,6 +314,7 @@ export default {
     Action,
     Search,
     Item,
+    NotificationPane,
   },
   data: function () {
     return {
@@ -296,6 +324,8 @@ export default {
       dragCounter: 0,
       width: window.innerWidth,
       itemWeight: 0,
+      showNotifications: false,
+      unacknowledgedNotificationCount: 0,
     };
   },
   computed: {
@@ -381,6 +411,9 @@ export default {
     },
     isMobile() {
       return this.width <= 736;
+    },
+    notificationIconCount() {
+      return this.unacknowledgedNotificationCount;
     },
   },
   watch: {
@@ -696,19 +729,19 @@ export default {
           action: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
-            upload.handleFiles(files, path, false);
+            upload.handleFiles(this.req.path, files, path, false);
           },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
-            upload.handleFiles(files, path, true);
+            upload.handleFiles(this.req.path, files, path, true);
           },
         });
 
         return;
       }
 
-      upload.handleFiles(files, path);
+      upload.handleFiles(this.req.path, files, path);
     },
     uploadInput(event) {
       this.$store.commit("closeHovers");
@@ -736,19 +769,19 @@ export default {
           action: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
-            upload.handleFiles(files, path, false);
+            upload.handleFiles(this.req.path, files, path, false);
           },
           confirm: (event) => {
             event.preventDefault();
             this.$store.commit("closeHovers");
-            upload.handleFiles(files, path, true);
+            upload.handleFiles(this.req.path, files, path, true);
           },
         });
 
         return;
       }
 
-      upload.handleFiles(files, path);
+      upload.handleFiles(this.req.path, files, path);
     },
     resetOpacity() {
       let items = document.getElementsByClassName("item");
@@ -891,6 +924,16 @@ export default {
 
       // Set the number of displayed items
       this.showLimit = showQuantity > totalItems ? totalItems : showQuantity;
+    },
+    openNotifications: function () {
+      this.$store.commit("closeHovers");
+      this.showNotifications = !this.showNotifications;
+    },
+    hideNotifications: function () {
+      this.showNotifications = false;
+    },
+    updateUnacknowledgedNotificationCount: function (newValue) {
+      this.unacknowledgedNotificationCount = newValue;
     },
   },
 };

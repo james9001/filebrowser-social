@@ -16,6 +16,15 @@
 @import "./login.css";
 @import "./mobile.css";
 
+:root {
+	--background: #fafafa;
+	--textPrimary: #333;
+	--textSecondary: #757575;
+	--surfacePrimary: #fff;
+  --surfaceSecondary: #f0f0f0;
+	--socialContainerBg: #e6e6e6;
+}
+
 .link {
   color: var(--blue);
 }
@@ -149,6 +158,10 @@ main .spinner .bounce2 {
   border: 2px solid white;
 }
 
+.action.notifications .counter {
+  background: var(--red);
+}
+
 /* PREVIEWER */
 
 #previewer {
@@ -185,10 +198,30 @@ main .spinner .bounce2 {
 #previewer header .action span {
   display: none;
 }
+#previewer header .action.notifications span.counter {
+  display: block;
+}
 
 #previewer .preview {
   text-align: center;
-  height: calc(100vh - 4em);
+}
+
+body.noscroll{
+    overflow:hidden;
+}
+
+.breadcrumb-overflow-removal{
+	overflow-x: hidden;
+}
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Old versions of Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
 }
 
 #previewer .preview pre {
@@ -209,7 +242,7 @@ main .spinner .bounce2 {
 
 #previewer .preview .info {
   position: absolute;
-  top: 50%;
+  top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 1.5em;
@@ -434,4 +467,24 @@ body.rtl .card-content .small + input {
 body.rtl .card.floating .card-content .file-list {
   direction: ltr;
   text-align: left;
+}
+
+.notifications-pane {
+  display: none;
+}
+
+.notifications-pane.frameShowNotifications {
+  display: block;
+  position: absolute;
+  top: 0;
+}
+
+.notifications-mobile-bar {
+  z-index: 100000;
+  position: absolute;
+  padding-top: 0.625em;
+}
+
+.notifications-mobile-bar .action span {
+  display: none;
 }

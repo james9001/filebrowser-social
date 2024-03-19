@@ -1,5 +1,9 @@
 :root {
   --blue: #2196f3;
+  --blue_trans_02percent: rgba(0, 0, 255, 0.02);
+  --blue_trans_05percent: rgba(0, 0, 255, 0.05);
+  --blue_trans_20percent: rgba(0, 0, 255, 0.2);
+  --blue_trans_50percent: rgba(0, 0, 255, 0.5);
   --dark-blue: #1E88E5;
   --red: #F44336;
   --dark-red: #D32F2F;

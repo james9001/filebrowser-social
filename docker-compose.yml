@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+  filebrowser-social:
+    image: filebrowser-social:latest
+    container_name: filebrowser-social
+    restart: unless-stopped
+    volumes:
+      - ./localdev/srv:/srv
+      - ./localdev/filebrowser.db:/filebrowser.db
+      - ./localdev/.filebrowser.json:/.filebrowser.json:ro
+    ports:
+      - 80:80

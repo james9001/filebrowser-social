@@ -1,39 +1,30 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/filebrowser/logo/master/banner.png" width="550"/>
-</p>
+# filebrowser-social
 
-![Preview](https://user-images.githubusercontent.com/5447088/50716739-ebd26700-107a-11e9-9817-14230c53efd2.gif)
-
-[![Build](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml/badge.svg)](https://github.com/filebrowser/filebrowser/actions/workflows/main.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/filebrowser/filebrowser?style=flat-square)](https://goreportcard.com/report/github.com/filebrowser/filebrowser)
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/filebrowser/filebrowser)
-[![Version](https://img.shields.io/github/release/filebrowser/filebrowser.svg?style=flat-square)](https://github.com/filebrowser/filebrowser/releases/latest)
-[![Chat IRC](https://img.shields.io/badge/freenode-%23filebrowser-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23filebrowser)
-
-filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.
-
-## Demo
-
-url: https://demo.filebrowser.org/
-
-credentials: `demo`/`demo`
+filebrowser-social is a downstream fork which intends to stay synced to the excellent upstream project, filebrowser, whilst also adding  social features. These features are those that a typical self-hoster might find useful in situations where filebrowser instances are shared among small groups of friends or family, such as: commenting, reactions, and notifications - as well as other miscellaneous relevant tweaks.
 
 ## Features
 
-Please refer to our docs at [https://filebrowser.org/features](https://filebrowser.org/features)
+filebrowser-social adds the following social features:
 
-## Install
+- Users may now leave Comments, which can be submitted against any files which have a Preview mode - which is almost all of them.
+- Users may now also submit Reactions against any files which may have Comments. The set of Reactions available is determined by the instance admin and/or users.
+- Whenever Comments and Reactions are submitted by users, Notification events are generated, which will be shown to other users until acknowledged.
+- A new way of viewing files, "Large Mosaic Gallery" mode. Useful for photo galleries.
+- Bandwidth control, implemented with Traffic Control (tc). Useful for when you want to limit the amount of bandwidth friends and/or family may use at any given time when accessing your filebrowser-social instances.
 
-For installation instructions please refer to our docs at [https://filebrowser.org/installation](https://filebrowser.org/installation).
+## Quick Start
 
-## Configuration
+From the root repo directory:
 
-[Authentication Method](https://filebrowser.org/configuration/authentication-method) - You can change the way the user authenticates with the filebrowser server
+- Run script `build.sh` to build container image
+- Run `touch localdev/filebrowser.db`
+- Run `docker compose up -d` and wait for the container to come up
+- Open a new browser window and navigate to `http://localhost:80`
+- Login with the username `admin` and password `admin`
+- Create a new user with the normal filebrowser user administration system, for example, `user2`
+- Open the image `1920px-MarsSunset.jpg`. You will see a Comments UI, and above that, a Reactions UI. The default localdev configuration has one reaction type configured.
+- If you log in as your newly created user (i.e. `user2` as created earlier), you will see notifications in the top right of the screen leading you towards the file context where you previously left comments and/or reactions, as the admin user
 
-[Command Runner](https://filebrowser.org/configuration/command-runner) - The command runner is a feature that enables you to execute any shell command you want before or after a certain event.
+## Troubleshooting
 
-[Custom Branding](https://filebrowser.org/configuration/custom-branding) - You can customize your File Browser installation by change its name to any other you want, by adding a global custom style sheet and by using your own logotype if you want.
-
-## Contributing
-
-If you're interested in contributing to this project, our docs are best places to start [https://filebrowser.org/contributing](https://filebrowser.org/contributing).
+Please feel free to open an Issue in this repository if you run into any problems!

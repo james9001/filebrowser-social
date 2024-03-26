@@ -1,0 +1,8 @@
+{
+  "address": "",
+  "baseURL": "/filebrowsersocial",
+  "database": "filebrowser.db",
+  "log": "stdout",
+  "port": 80,
+  "root": "/srv"
+}

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-#this needs to be a certain size for higher bandwidths to work properly
-export TRAFFIC_CONTROL_BURST_BUFFER="16mbit"
+# ${TRAFFIC_CONTROL_BURST_BUFFER} needs to be a certain size for higher bandwidths to work properly
 
 if [ $ENABLE_TRAFFIC_CONTROL == 'yes' ]
 then
